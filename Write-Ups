@@ -134,7 +134,6 @@ Level 12 → 13: The Onion
 Concept: A relentless deconstruction of layers—hexdumps, gzip, bzip2, and tar. We peel back the compression until the core is exposed. 
 Execution:
 
-
 # Setup workspace
 mkdir /tmp/mikka && cd /tmp/mikka
 cp ~/data.txt .
