@@ -1,10 +1,10 @@
 My write-ups of understanding of all Bandit levels in OverTheWire.
 
-OverTheWire Bandit: The Shell Odyssey
+#OverTheWire Bandit: The Shell Odyssey
 
     "He who fights with monsters should look to it that he himself does not become a monster. And if you gaze long into an abyss, the abyss also gazes into you." — Nietzsche
 
-Prologue: The Threshold
+#Prologue: The Threshold
 
 Level 0
 
@@ -17,7 +17,7 @@ The Execution:
 ssh bandit0@bandit.labs.overthewire.org -p 2220
 # Credential: bandit0
 
-Part I: The Basics of Existence
+#Part I: The Basics of Existence
 Level 0 → 1: The Readme
 
 Concept: The truth is often hidden in plain sight. 
@@ -112,7 +112,7 @@ Execution:
 bandit9@bandit:~$ strings data.txt | grep "=.*"
 # Locate the password preceded by several '=' characters
 
-Part II: Transformation & Encryption
+#Part II: Transformation & Encryption
 Level 10 → 11: Decoding Base64
 
 Concept: The text has been obscured by encoding. We must reverse the process to see clearly. 
@@ -199,7 +199,7 @@ nano id_rsa # (Paste key here)
 chmod 600 id_rsa
 ssh -i id_rsa bandit17@localhost
 
-Part III: The System's Logic
+#Part III: The System's Logic
 Level 17 → 18: The Difference
 
 Concept: Change is the only constant. We compare the old and the new to find the deviation. 
@@ -261,12 +261,12 @@ Concept: Creating our own logic. We write a script, plant it in the scheduler's 
 Execution:
 
 
-mkdir /tmp/mikkalevel24 && cd /tmp/mikkalevel24
+mkdir /tmp/devlevel24 && cd /tmp/devlevel24
 nano script.sh
 
 # Script Content:
 #!/bin/bash
-cat /etc/bandit_pass/bandit24 > /tmp/mikkalevel24/bandit24
+cat /etc/bandit_pass/bandit24 > /tmp/devlevel24/bandit24
 
 chmod +x script.sh
 chmod 777 . 
@@ -317,14 +317,14 @@ Execution:
 
 ./bandit27-do cat /etc/bandit_pass/bandit27
 
-Part IV: The Git Repository
+#Part IV: The Git Repository
 Level 27 → 28: The Clone
 
 Concept: The password lies within the version history. 
 Execution:
 
 
-mkdir /tmp/mikkalevel27 && cd /tmp/mikkalevel27
+mkdir /tmp/devlevel27 && cd /tmp/devlevel27
 git clone ssh://bandit27-git@localhost/home/bandit27-git/repo
 cat repo/README
 
