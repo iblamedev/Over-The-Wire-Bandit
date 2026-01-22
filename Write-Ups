@@ -1,0 +1,385 @@
+My write-ups of understanding of all Bandit levels in OverTheWire.
+
+OverTheWire Bandit: The Shell Odyssey
+
+    "He who fights with monsters should look to it that he himself does not become a monster. And if you gaze long into an abyss, the abyss also gazes into you." — Nietzsche
+
+Prologue: The Threshold
+
+Level 0
+
+The Directive: We stand at the gate. The first step is not to conquer, but to enter. We must establish a connection to the host bandit.labs.overthewire.org on port 2220.
+
+The Execution:
+
+
+# Initiating the handshake
+ssh bandit0@bandit.labs.overthewire.org -p 2220
+# Credential: bandit0
+
+Part I: The Basics of Existence
+Level 0 → 1: The Readme
+
+Concept: The truth is often hidden in plain sight. 
+Execution:
+
+
+bandit0@bandit:~$ ls
+readme
+bandit0@bandit:~$ cat readme 
+# Password retrieved
+
+Level 1 → 2: The Dash
+
+Concept: A filename that defies convention requires a specific path to be acknowledged. 
+Execution:
+
+
+bandit1@bandit:~$ ls
+-
+bandit1@bandit:~$ ./- # referencing the current directory explicitly
+
+Level 2 → 3: The Void Between Words
+
+Concept: Handling the spaces that divide us—or in this case, the filename. 
+Execution:
+
+
+bandit2@bandit:~$ cat spaces\ in\ this\ filename
+
+Level 3 → 4: The Hidden
+
+Concept: Just because it is unseen does not mean it is absent. We must look closer. 
+Execution:
+
+
+bandit3@bandit:~$ cd inhere
+bandit3@bandit:~/inhere$ ls -la # Reveal the hidden dotfiles
+bandit3@bandit:~/inhere$ cat .hidden
+
+Level 4 → 5: The Human Element
+
+Concept: Amidst the binary noise, we seek the only thing that speaks our language: ASCII text. 
+Execution:
+
+
+bandit4@bandit:~/inhere$ file ./* | grep "text"
+./-file07: ASCII text
+bandit4@bandit:~/inhere$ cat ./-file07
+
+Level 5 → 6: The Specificity of Being
+
+Concept: The target has defined properties: human-readable, exactly 1033 bytes, and non-executable. We filter the world to find it. 
+Execution:
+
+
+bandit5@bandit:~/inhere$ find . -readable -size 1033c ! -executable
+./maybehere07/.file2
+bandit5@bandit:~/inhere$ cat ./maybehere07/.file2
+
+Level 6 → 7: Ownership
+
+Concept: Identity defines access. We search for a file owned by bandit7, grouped by bandit6, exactly 33 bytes in size. 
+Execution:
+
+
+bandit6@bandit:~$ find / -user bandit7 -group bandit6 -size 33c 2>/dev/null
+/var/lib/dpkg/info/bandit7.password
+bandit6@bandit:~$ cat /var/lib/dpkg/info/bandit7.password
+
+Level 7 → 8: The Millionth Iteration
+
+Concept: Sifting through the repetition to find the one line that matters. 
+Execution:
+
+
+bandit7@bandit:~$ cat data.txt | grep "millionth"
+
+Level 8 → 9: The Unique Soul
+
+Concept: In a sea of duplicates, individuality is the key. 
+Execution:
+
+
+bandit8@bandit:~$ sort data.txt | uniq -u
+
+Level 9 → 10: The Strings of Fate
+
+Concept: Extracting readable meaning from a binary blob, marked by the sign of equality. 
+Execution:
+
+
+bandit9@bandit:~$ strings data.txt | grep "=.*"
+# Locate the password preceded by several '=' characters
+
+Part II: Transformation & Encryption
+Level 10 → 11: Decoding Base64
+
+Concept: The text has been obscured by encoding. We must reverse the process to see clearly. 
+Execution:
+
+
+bandit10@bandit:~$ cat data.txt | base64 -d
+
+Level 11 → 12: The Rotated Cipher
+
+Concept: A simple shift in perspective (ROT13) reveals the message. 
+Execution:
+
+
+bandit11@bandit:~$ cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'
+
+Level 12 → 13: The Onion
+
+Concept: A relentless deconstruction of layers—hexdumps, gzip, bzip2, and tar. We peel back the compression until the core is exposed. 
+Execution:
+
+
+# Setup workspace
+mkdir /tmp/mikka && cd /tmp/mikka
+cp ~/data.txt .
+
+# Deconstruction sequence
+xxd -r data > binary
+mv binary binary.gz
+gzip -d binary.gz
+bzip2 -d binary
+mv binary.out binary.gz
+gzip -d binary.gz
+tar -xf binary
+tar -xf data5.bin
+bzip2 -d data6.bin 2>/dev/null
+tar -xf data6.bin.out
+mv data8.bin data8.gz
+gzip -d data8.gz
+cat data8
+
+Level 13 → 14: The Private Key
+
+Concept: Possession of the key grants entry. We use the private SSH key to assume the identity of the next user. 
+Execution:
+
+
+bandit13@bandit:~$ ssh -i sshkey.private bandit14@localhost
+
+Level 14 → 15: The Socket
+
+Concept: Submitting our current knowledge to the local port to receive the next truth. 
+Execution:
+
+
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+bandit14@bandit:~$ nc 127.0.0.1 30000
+# Submit current password -> Receive next password
+
+Level 15 → 16: The Secure Channel
+
+Concept: Same destination, but the path now requires encryption (SSL/TLS). 
+Execution:
+
+
+bandit15@bandit:~$ ncat -C --ssl 127.0.0.1 30001
+# Submit current password
+
+Level 16 → 17: The Port Scan
+
+Concept: We must map the territory to find the listener. Only one port speaks SSL and offers the credentials. 
+Execution:
+
+
+# Mapping the ports
+bandit16@bandit:~$ nmap -p 31000-32000 127.0.0.1
+
+# Connecting to the open SSL port
+bandit16@bandit:~$ cat /etc/bandit_pass/bandit16 | openssl s_client -quiet -connect 127.0.0.1:31790
+
+# Capturing the RSA Key
+mkdir /tmp/mikka && cd /tmp/mikka
+nano id_rsa # (Paste key here)
+chmod 600 id_rsa
+ssh -i id_rsa bandit17@localhost
+
+Part III: The System's Logic
+Level 17 → 18: The Difference
+
+Concept: Change is the only constant. We compare the old and the new to find the deviation. 
+Execution:
+
+
+bandit17@bandit:~$ diff passwords.old passwords.new
+
+Level 18 → 19: The Forced Exit
+
+Concept: The system tries to silence us upon entry (.bashrc logout). We must execute our command before the door closes. 
+Execution:
+
+
+ssh bandit18@bandit.labs.overthewire.org -p 2220 'cat ~/readme'
+
+Level 19 → 20: The Power of Setuid
+
+Concept: Assuming the identity of another binary to access what is forbidden to us. 
+Execution:
+
+
+bandit19@bandit:~$ ./bandit20-do cat /etc/bandit_pass/bandit20
+
+Level 20 → 21: The Listener
+
+Concept: We become the server. We open a port, listen, and verify the connection. 
+Execution:
+
+
+# Run listener in background
+echo "[Current Password]" | netcat -lp 4444 &
+# Trigger the connection
+./suconnect 4444
+
+Level 21 → 22: The Cron Job
+
+Concept: Observing the automated heartbeat of the system. 
+Execution:
+
+
+cat /usr/bin/cronjob_bandit22.sh
+cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+
+Level 22 → 23: The MD5 Target
+
+Concept: We must think like the machine. The script generates a target filename based on the user's identity. We calculate where bandit23's file will be. 
+Execution:
+
+
+# Calculate the hash for the next user
+echo I am user bandit23 | md5sum | cut -d ' ' -f 1
+# Read the resulting file
+cat /tmp/8ca319486bfbbc3663ea0fbe81326349
+
+Level 23 → 24: The Script Injection
+
+Concept: Creating our own logic. We write a script, plant it in the scheduler's path, and wait for the system to execute our will. 
+Execution:
+
+
+mkdir /tmp/mikkalevel24 && cd /tmp/mikkalevel24
+nano script.sh
+
+# Script Content:
+#!/bin/bash
+cat /etc/bandit_pass/bandit24 > /tmp/mikkalevel24/bandit24
+
+chmod +x script.sh
+chmod 777 . 
+cp script.sh /var/spool/bandit24
+# Wait for cron execution...
+cat bandit24
+
+Level 24 → 25: The Brute Force
+
+Concept: When the key is unknown, we try every possible permutation. A daemon requires a PIN; we provide them all. 
+Execution:
+
+
+mkdir /tmp/mikkalevel25 && cd /tmp/mikkalevel25
+nano script.sh
+
+# Loop through 0000-9999
+#!/bin/bash
+for i in {0000..9999}; do
+    echo "UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ" $i >> passwords
+done
+
+chmod +x script.sh
+./script.sh
+cat passwords | nc localhost 30002 >> result
+cat result | grep 'The password'
+
+Level 25 → 26: The Shell Escape
+
+Concept: The environment is a prison (custom shell). We break the boundaries by abusing the pager (more) to spawn a true shell. 
+Execution:
+
+
+# Minimize terminal window to force 'more' into pagination
+ssh -i bandit26.sshkey bandit26@127.0.0.1
+# In 'more', press 'v' to launch vim
+# In vim:
+:set shell=/bin/bash
+:shell
+# Freedom attained.
+cat /etc/bandit_pass/bandit26
+
+Level 26 → 27: The Escalation
+
+Concept: Using the tools at hand to read the forbidden file. 
+Execution:
+
+
+./bandit27-do cat /etc/bandit_pass/bandit27
+
+Part IV: The Git Repository
+Level 27 → 28: The Clone
+
+Concept: The password lies within the version history. 
+Execution:
+
+
+mkdir /tmp/mikkalevel27 && cd /tmp/mikkalevel27
+git clone ssh://bandit27-git@localhost/home/bandit27-git/repo
+cat repo/README
+
+Level 28 → 29: The History
+
+Concept: Nothing is ever truly deleted in Git. We check the logs to find what was "fixed." 
+Execution:
+
+
+git log
+# Identify the commit where "missing data" was added or leaked
+git checkout c086d11a00c0648d095d04c089786efef5e01264
+cat README.md
+
+Level 29 → 30: The Branch
+
+Concept: The truth is not in the master branch, but in the development timeline. 
+Execution:
+
+
+git branch -r 
+git checkout dev
+cat README.md
+
+Level 30 → 31: The Tag
+
+Concept: A specific point in time marked as 'secret'. 
+Execution:
+
+
+git tag
+git show secret
+
+Level 31 → 32: The Push
+
+Concept: We must contribute to the repository to receive the reward. We push a file, but the remote rejects us—revealing the password in the error message. 
+Execution:
+
+
+echo 'May I come in?' > key.txt
+rm .gitignore
+git add .
+git commit -m 'Added key.txt'
+git push origin master
+# Password found in the remote rejection message
+
+Level 32 → 33: The Final Escape
+
+Concept: A "restrictive shell" that mimics uppercase. We invoke the variable $0 to call the shell by its true name. 
+Execution:
+
+
+WELCOME TO THE UPPERCASE SHELL
+>> $0
+$ whoami
+bandit33
+
+    "There is no real ending. It’s just the place where you stop the story." — Herbert
