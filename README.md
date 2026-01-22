@@ -1,5 +1,7 @@
 # Over-The-Wire-Bandit
 
+CHECK OUT THE WRITE-UPS MADE BY ME IN THIS REPO FOR DETAILED INFO.
+
 Appendix: Credentials that were conquered.
 
 ``
